@@ -1,10 +1,7 @@
 package com.climaquest.cqapi.service;
 
 import com.climaquest.cqapi.dto.CreatePlayerRequest;
-import com.climaquest.cqapi.dto.MissionResultResponse;
 import com.climaquest.cqapi.dto.PlayerResponse;
-import com.climaquest.cqapi.dto.SubmitMissionRequest;
-import com.climaquest.cqapi.entity.MissionProgress;
 import com.climaquest.cqapi.entity.Player;
 import com.climaquest.cqapi.repository.MissionProgressRepository;
 import com.climaquest.cqapi.repository.PlayerRepository;
