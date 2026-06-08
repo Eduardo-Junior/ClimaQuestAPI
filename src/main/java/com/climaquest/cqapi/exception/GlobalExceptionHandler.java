@@ -1,6 +1,7 @@
 package com.climaquest.cqapi.exception;
 
 import com.climaquest.cqapi.dto.ErrorResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -51,6 +52,13 @@ public class GlobalExceptionHandler {
         var message = "Parâmetro '" + ex.getName() + "' com valor inválido: '" + ex.getValue() + "'";
         var body = ErrorResponse.of(400, "Bad Request", message);
         return ResponseEntity.badRequest().body(body);
+    }
+
+    // Trata violação de constraint única (ex: codename duplicado)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException ex) {
+        var body = ErrorResponse.of(409, "Conflict", "Já existe um registro com esses dados (verifique campos únicos como o codinome)");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 
     // Catch-all — qualquer exceção não tratada acima vira 500
