@@ -54,6 +54,7 @@ public class GlobalExceptionHandler {
     // Catch-all — qualquer exceção não tratada acima vira 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        log.error("Erro inesperado: {}", ex.getMessage(), ex);
         var body = ErrorResponse.of(500, "Internal Server Error", "Erro interno inesperado");
         return ResponseEntity.internalServerError().body(body);
     }
