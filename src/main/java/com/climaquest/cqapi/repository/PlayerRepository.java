@@ -15,9 +15,9 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     //SELECT * FROM players WHERE codename = ?
     Optional<Player> findByCodename(String codename);
 
-    //Lista os primeiros jogadores do ranking, limitado por parâmetro passado
-    //SELECT * FROM players ORDER BY xp DESC LIMIT ?
-    List<Player> findTopByOrderByXpDesc();
+    //Lista os jogadores ordenados por XP (o limite é aplicado no service)
+    //SELECT * FROM players ORDER BY xp DESC
+    List<Player> findAllByOrderByXpDesc();
 
     boolean existsByCodename(String codename);
 }

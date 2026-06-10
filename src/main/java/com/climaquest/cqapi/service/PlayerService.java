@@ -44,7 +44,7 @@ public class PlayerService {
     }
 
     public List<PlayerResponse> getRanking(int limit){
-        return playerRepository.findTopByOrderByXpDesc()
+        return playerRepository.findAllByOrderByXpDesc()
                 .stream()
                 .limit(limit)
                 .map(PlayerResponse::from)
