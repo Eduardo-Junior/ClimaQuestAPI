@@ -11,13 +11,14 @@ REST API para o **ClimaQuest**, jogo educativo sobre conscientização climátic
 - **PostgreSQL** (hospedado no [Supabase](https://supabase.com))
 - **Lombok**
 - **SpringDoc OpenAPI** (Swagger UI)
-- Deploy: [Discloud](https://discloud.app) — `https://climaquest.discloud.app`
+- **Docker** + Deploy: [Render](https://render.com)
 
 ## Pré-requisitos
 
 - Java 21+
 - Maven 3.9+ (ou use o wrapper `mvnw` incluído no projeto)
 - Banco PostgreSQL acessível (local ou Supabase)
+- Docker (opcional, para rodar via container)
 
 ## Rodando localmente
 
@@ -65,6 +66,13 @@ mvnw.cmd spring-boot:run
 ```
 
 A API sobe em **http://localhost:8080**.
+
+### Alternativa: rodar via Docker
+
+```bash
+docker build -t cqapi .
+docker run --rm -p 8080:8080 --env-file .env cqapi
+```
 
 ### 4. Swagger UI
 
@@ -189,14 +197,20 @@ O XP é concedido na recompensa diária e ao completar missões. O nível é cal
 nivel = floor(xp / 500) + 1
 ```
 
-## Deploy (Discloud)
+## Deploy (Render + Docker)
 
-Gere o JAR e faça o upload via painel ou CLI da Discloud:
+O deploy é feito via **Docker**, usando o `Dockerfile` na raiz do projeto (build multi-stage: compila o jar com Maven e roda numa imagem JRE leve).
 
-```bash
-./mvnw package -DskipTests
-```
+### Via Blueprint (`render.yaml`)
 
-O arquivo gerado será `target/cqapi-0.0.1-SNAPSHOT.jar`. Junto com o `discloud.config`, é tudo que a Discloud precisa para subir a aplicação.
+1. No painel do [Render](https://dashboard.render.com), escolha **New > Blueprint** e selecione este repositório. O `render.yaml` já define o serviço (`runtime: docker`, plano free, health check em `/v3/api-docs`).
+2. Preencha as variáveis de ambiente marcadas como `sync: false` no painel:
+   - `DB_USER`, `DB_PASSWORD` (credenciais do Supabase)
+   - `JWT_SECRET` (chave de assinatura dos tokens — ex: `openssl rand -base64 64`)
+3. `JWT_EXPIRATION_MS` já vem configurado com o padrão (24h), mas pode ser ajustado no painel.
 
-> As variáveis do `.env` (incluindo `JWT_SECRET` e `JWT_EXPIRATION_MS`) precisam ser configuradas nas **variáveis de ambiente do app** no painel da Discloud — o arquivo `.env` local não é enviado no deploy.
+### Via Web Service manual
+
+Alternativamente, crie um **Web Service** apontando para o repositório, com `Runtime` = `Docker` e configure as mesmas variáveis de ambiente acima. O Render builda a imagem a partir do `Dockerfile` a cada push.
+
+> O Render injeta a variável `PORT` automaticamente — a aplicação já está configurada para escutar nela (`server.port=${PORT:8080}`).
