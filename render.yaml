@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: cqapi
+    runtime: docker
+    plan: free
+    healthCheckPath: /v3/api-docs
+    envVars:
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION_MS
+        value: "86400000"
+      - key: SENTRY_AUTH_TOKEN
+        sync: false
